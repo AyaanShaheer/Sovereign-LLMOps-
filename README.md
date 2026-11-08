@@ -4,9 +4,9 @@
 
 An end-to-end MLOps platform for deploying, evaluating, monitoring, and rolling back quantized Large Language Models in disconnected and resource-constrained edge environments.
 
-<img width="1900" height="977" alt="Screenshot 2026-11-09 002910" src="https://github.com/user-attachments/assets/3c35ea88-b652-4fc2-9265-c6d0d2ad692b" />
-<img width="1915" height="993" alt="Screenshot 2026-11-09 003244" src="https://github.com/user-attachments/assets/6560490c-c0a6-4abf-ae39-dc001f2e4341" />
-<img width="1906" height="274" alt="Screenshot 2026-11-09 003011" src="https://github.com/user-attachments/assets/c8246f13-984a-4cbf-b0eb-afaf6952491d" />
+<img width="1831" height="1015" alt="Screenshot 2026-11-09 003019" src="https://github.com/user-attachments/assets/ebb0ff78-4fa7-4b07-b3b4-00c6b6dd8ed4" />
+<img width="1597" height="752" alt="grafana-dashboard" src="https://github.com/user-attachments/assets/eead2706-b5de-4390-bef3-83be4a482059" />
+
 
 ---
 
@@ -594,12 +594,6 @@ Sovereign-LLMOps-/
 ├── runbooks/
 │   └── FIELD_INCIDENT_RUNBOOK.md
 │
-├── docs/
-│   └── images/
-│       ├── grafana-dashboard.png
-│       ├── gitea-repository.png
-│       ├── prometheus-targets.png
-│       └── prometheus-alerts.png
 │
 ├── .gitignore
 └── README.md
@@ -723,19 +717,22 @@ The following screenshots demonstrate the project running in the local environme
 
 The dashboard visualises model generation throughput, prompt prefill speed, cumulative generated tokens, and active/deferred requests.
 
-![Grafana Sovereign AI Edge LLM Dashboard](docs/images/grafana-dashboard.png)
+<img width="1597" height="752" alt="grafana-dashboard" src="https://github.com/user-attachments/assets/10cb73af-26b3-4ad6-9e84-e3048cfcecbf" />
+
 
 ### Gitea — Local GitOps Repository
 
 The self-hosted Gitea repository stores Kubernetes deployment configuration and operational artifacts within the edge environment.
 
-![Gitea Sovereign LLM Ops Repository](docs/images/gitea-repository.png)
+<img width="1831" height="1015" alt="Screenshot 2026-11-09 003019" src="https://github.com/user-attachments/assets/4129d9b7-8725-4887-a511-84b66aadee1e" />
+
 
 ### Prometheus — Scrape Target Health
 
 The Prometheus target page shows the LLM metrics endpoint successfully reporting an UP state.
 
-![Prometheus Targets](docs/images/prometheus-targets.png)
+<img width="1600" height="766" alt="prometheus-targets-mockup" src="https://github.com/user-attachments/assets/05c3b80b-2cc3-477a-8bf0-c4d409201508" />
+
 
 ### Prometheus — Alert Rules
 
@@ -743,7 +740,8 @@ The alert page shows the configured LLMQueueSaturation and LLMThroughputDegraded
 
 Inactive status means the corresponding firing conditions were not currently met when the screenshot was captured.
 
-![Prometheus Alert Rules](docs/images/prometheus-alerts.png)
+<img width="1600" height="747" alt="prometheus-alerts-mockup" src="https://github.com/user-attachments/assets/a445e746-946e-4398-afb9-c8ed94ce25e6" />
+
 
 ---
 
