@@ -1,0 +1,25 @@
+# Quantized LLM Weights & Model Artifacts
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Air-Gap Container & Binary Archives
+*.tar
+*.tar.gz
+*.tar.zst
+k3s
+
+# Python Bytecode & Environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Kubernetes & Secrets
+kubeconfig
+*.kubeconfig
+.env
+*.pem
+*.key
