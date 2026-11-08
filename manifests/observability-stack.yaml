@@ -1,0 +1,218 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: platform-ops
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+      evaluation_interval: 5s
+    rule_files:
+      - /etc/prometheus/alert_rules.yml
+    scrape_configs:
+      - job_name: 'sovereign-edge-llm'
+        static_configs:
+          - targets: ['qwen-edge-llm.sovereign-ai.svc.cluster.local:8080']
+  alert_rules.yml: |
+    groups:
+      - name: sovereign_llm_alerts
+        rules:
+          - alert: LLMQueueSaturation
+            expr: llamacpp:requests_deferred > 0
+            for: 15s
+            labels:
+              severity: critical
+            annotations:
+              summary: "Inference requests are queued due to KV cache or CPU saturation"
+          - alert: LLMThroughputDegraded
+            expr: llamacpp:predicted_tokens_seconds > 0 and llamacpp:predicted_tokens_seconds < 5
+            for: 30s
+            labels:
+              severity: warning
+            annotations:
+              summary: "Generation throughput dropped below 5 tokens/sec SLA"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: platform-ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: localhost:30500/prometheus:v2.54.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.retention.time=7d"
+        ports:
+        - containerPort: 9090
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "150m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus
+      volumes:
+      - name: config
+        configMap:
+          name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: platform-ops
+spec:
+  type: NodePort
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    targetPort: 9090
+    nodePort: 30900
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning
+  namespace: platform-ops
+data:
+  datasource.yml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus-edge
+        access: proxy
+        url: http://prometheus.platform-ops.svc.cluster.local:9090
+        isDefault: true
+  dashboards.yml: |
+    apiVersion: 1
+    providers:
+      - name: 'sovereign-llm'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+  sovereign-llm-dashboard.json: |
+    {
+      "title": "Sovereign AI - Edge LLM Telemetry",
+      "uid": "sovereign-llm-edge",
+      "schemaVersion": 39,
+      "refresh": "5s",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Generation Speed (Tokens / Sec)",
+          "type": "stat",
+          "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:predicted_tokens_seconds", "refId": "A"}]
+        },
+        {
+          "id": 2,
+          "title": "Prompt Prefill Speed (Tokens / Sec)",
+          "type": "stat",
+          "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:prompt_tokens_seconds", "refId": "A"}]
+        },
+        {
+          "id": 3,
+          "title": "Cumulative Tokens Generated",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:tokens_predicted_total", "refId": "A"}]
+        },
+        {
+          "id": 4,
+          "title": "Active vs Deferred (Queued) Requests",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+          "targets": [
+            {"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:requests_processing", "legendFormat": "Processing", "refId": "A"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:requests_deferred", "legendFormat": "Deferred", "refId": "B"}
+          ]
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: platform-ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: localhost:30500/grafana:11.2.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: "SovereignPass123!"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: "Admin"
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "192Mi"
+            cpu: "100m"
+          limits:
+            memory: "384Mi"
+            cpu: "400m"
+        volumeMounts:
+        - name: grafana-prov
+          mountPath: /etc/grafana/provisioning/datasources/datasource.yml
+          subPath: datasource.yml
+        - name: grafana-prov
+          mountPath: /etc/grafana/provisioning/dashboards/dashboards.yml
+          subPath: dashboards.yml
+        - name: grafana-prov
+          mountPath: /var/lib/grafana/dashboards/sovereign-llm-dashboard.json
+          subPath: sovereign-llm-dashboard.json
+      volumes:
+      - name: grafana-prov
+        configMap:
+          name: grafana-provisioning
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: platform-ops
+spec:
+  type: NodePort
+  selector:
+    app: grafana
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30400
