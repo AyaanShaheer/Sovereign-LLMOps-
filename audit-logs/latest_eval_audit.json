@@ -1,26 +1,26 @@
 {
-  "timestamp_utc": "2026-11-08T18:49:17.989378+00:00",
+  "timestamp_utc": "2026-11-08T19:02:29.543344+00:00",
   "verdict": "APPROVED",
   "summary": {
     "accuracy": 1.0,
-    "avg_latency_sec": 0.491,
-    "throughput_tokens_per_sec": 5.1,
+    "avg_latency_sec": 0.595,
+    "throughput_tokens_per_sec": 4.2,
     "sla_max_latency_sec": 8.0,
     "sla_min_accuracy": 0.75
   },
   "prometheus_telemetry": {
-    "llamacpp:prompt_tokens_total": 129.0,
-    "llamacpp:prompt_tokens_cached_total": 77.0,
-    "llamacpp:prompt_seconds_total": 1.55411,
-    "llamacpp:tokens_predicted_total": 10.0,
-    "llamacpp:tokens_predicted_seconds_total": 0.39314,
-    "llamacpp:n_decode_total": 10.0,
+    "llamacpp:prompt_tokens_total": 529.0,
+    "llamacpp:prompt_tokens_cached_total": 501.0,
+    "llamacpp:prompt_seconds_total": 12.7818,
+    "llamacpp:tokens_predicted_total": 50.0,
+    "llamacpp:tokens_predicted_seconds_total": 2.56759,
+    "llamacpp:n_decode_total": 50.0,
     "llamacpp:n_tokens_max": 61.0,
     "llamacpp:spec_decode_num_draft_tokens_total": 0.0,
     "llamacpp:spec_decode_num_accepted_tokens_total": 0.0,
     "llamacpp:spec_decode_num_drafts_total": 0.0,
-    "llamacpp:prompt_tokens_seconds": 83.0056,
-    "llamacpp:predicted_tokens_seconds": 15.2617,
+    "llamacpp:prompt_tokens_seconds": 58.8881,
+    "llamacpp:predicted_tokens_seconds": 9.26712,
     "llamacpp:requests_processing": 0.0,
     "llamacpp:requests_deferred": 0.0,
     "llamacpp:n_busy_slots_per_decode": 1.0
@@ -29,25 +29,25 @@
     {
       "id": "airgap-net-01",
       "status": "PASS",
-      "latency_sec": 0.677,
+      "latency_sec": 0.574,
       "output": "SSH"
     },
     {
       "id": "k8s-ops-02",
       "status": "PASS",
-      "latency_sec": 0.388,
+      "latency_sec": 0.421,
       "output": "Pod"
     },
     {
       "id": "india-sov-03",
       "status": "PASS",
-      "latency_sec": 0.355,
+      "latency_sec": 0.637,
       "output": "New Delhi"
     },
     {
       "id": "quant-ml-04",
       "status": "PASS",
-      "latency_sec": 0.543,
+      "latency_sec": 0.747,
       "output": "Decrease"
     }
   ]

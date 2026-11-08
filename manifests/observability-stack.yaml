@@ -117,21 +117,21 @@ data:
       "title": "Sovereign AI - Edge LLM Telemetry",
       "uid": "sovereign-llm-edge",
       "schemaVersion": 39,
-      "refresh": "5s",
+      "refresh": "5s", "time": {"from": "now-15m", "to": "now"},
       "panels": [
         {
           "id": 1,
           "title": "Generation Speed (Tokens / Sec)",
           "type": "stat",
           "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
-          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:predicted_tokens_seconds", "refId": "A"}]
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:tokens_predicted_total / llamacpp:tokens_predicted_seconds_total", "refId": "A"}]
         },
         {
           "id": 2,
           "title": "Prompt Prefill Speed (Tokens / Sec)",
           "type": "stat",
           "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
-          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:prompt_tokens_seconds", "refId": "A"}]
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-edge"}, "expr": "llamacpp:prompt_tokens_total / llamacpp:prompt_seconds_total", "refId": "A"}]
         },
         {
           "id": 3,
