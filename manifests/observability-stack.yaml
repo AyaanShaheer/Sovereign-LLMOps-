@@ -174,7 +174,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: "SovereignPass123!"
+          value: "admin"
         - name: GF_AUTH_ANONYMOUS_ENABLED
           value: "true"
         - name: GF_AUTH_ANONYMOUS_ORG_ROLE
